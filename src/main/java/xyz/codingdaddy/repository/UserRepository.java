@@ -6,6 +6,7 @@ import javax.enterprise.context.ApplicationScoped;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * In-memory user repository
@@ -14,7 +15,9 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 @ApplicationScoped
 public class UserRepository {
-    private List<User> users = new CopyOnWriteArrayList<User>() {{
+    private final AtomicLong id = new AtomicLong(0L);
+
+    private final List<User> users = new CopyOnWriteArrayList<User>() {{
         add(create("admin", "admin", "admin@example.com"));
         add(create("user", "user", "user@example.com"));
     }};
@@ -47,6 +50,6 @@ public class UserRepository {
     }
 
     private long getNextUserId() {
-        return users.size();
+        return id.getAndIncrement();
     }
 }
