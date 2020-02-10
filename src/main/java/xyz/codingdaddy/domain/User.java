@@ -1,9 +1,25 @@
 package xyz.codingdaddy.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+/**
+ * User entity
+ *
+ * @author serhiy
+ */
 public class User {
+    private long id;
     private String username;
     private String password;
     private String email;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
@@ -13,6 +29,7 @@ public class User {
         this.username = username;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }

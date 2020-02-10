@@ -3,28 +3,50 @@ package xyz.codingdaddy.repository;
 import xyz.codingdaddy.domain.User;
 
 import javax.enterprise.context.ApplicationScoped;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * In-memory user repository
+ *
+ * @author serhiy
+ */
 @ApplicationScoped
 public class UserRepository {
-    private List<User> users = new ArrayList<>();
+    private List<User> users = new CopyOnWriteArrayList<User>() {{
+        add(create("admin", "admin", "admin@example.com"));
+        add(create("user", "user", "user@example.com"));
+    }};
 
-    public UserRepository() {
-        users.add(createUser("admin", "admin", "admin@example.com"));
-        users.add(createUser("user", "user", "user@example.com"));
+    public User create(User user) {
+        user.setId(getNextUserId());
+        users.add(user);
+        return user;
     }
 
-    public Optional<User> findUser(String username) {
+    public Optional<User> findByUsername(String username) {
         return users.stream().filter(u -> u.getUsername().equals(username)).findFirst();
     }
 
-    private User createUser(String username, String password, String email) {
+    public List<User> findAll() {
+        return users;
+    }
+
+    public boolean delete(String username) {
+        return findByUsername(username).map(u -> users.remove(u)).orElse(false);
+    }
+
+    private User create(String username, String password, String email) {
         User user = new User();
+        user.setId(getNextUserId());
         user.setUsername(username);
         user.setPassword(password);
         user.setEmail(email);
         return user;
+    }
+
+    private long getNextUserId() {
+        return users.size();
     }
 }
